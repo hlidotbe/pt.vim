@@ -1,3 +1,3 @@
 task :tgz do
-  sh 'cd ..; tar czvf ag/ag-vim.tgz ag/{plugin,autoload,doc}'
+  sh 'cd ..; tar czvf pt/pt-vim.tgz pt/{plugin,autoload,doc}'
 end

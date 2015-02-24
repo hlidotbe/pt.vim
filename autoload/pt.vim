@@ -1,53 +1,47 @@
-" NOTE: You must, of course, install ag / the_silver_searcher
+" NOTE: You must, of course, install pt / the_platinum_searcher
 
 " FIXME: Delete deprecated options below on or after 15-7 (6 months from when they were changed) {{{
 
-if exists("g:agprg")
-  let g:ag_prg = g:agprg
+if exists("g:ptprg")
+  let g:pt_prg = g:ptprg
 endif
 
-if exists("g:aghighlight")
-  let g:ag_highlight = g:aghighlight
+if exists("g:pthighlight")
+  let g:pt_highlight = g:pthighlight
 endif
 
-if exists("g:agformat")
-  let g:ag_format = g:agformat
+if exists("g:ptformat")
+  let g:pt_format = g:ptformat
 endif
 
 " }}} FIXME: Delete the deprecated options above on or after 15-7 (6 months from when they were changed)
 
-" Location of the ag utility
-if !exists("g:ag_prg")
-  " --vimgrep (consistent output we can parse) is available from version  0.25.0+
-  if split(system("ag --version"), "[ \n\r\t]")[2] =~ '\d\+.[2-9][5-9]\(.\d\+\)\?'
-    let g:ag_prg="ag --vimgrep"
-  else
-    " --noheading seems odd here, but see https://github.com/ggreer/the_silver_searcher/issues/361
-    let g:ag_prg="ag --column --nogroup --noheading"
-  endif
+" Location of the pt utility
+if !exists("g:pt_prg")
+  let g:pt_prg="pt --nogroup"
 endif
 
-if !exists("g:ag_apply_qmappings")
-  let g:ag_apply_qmappings=1
+if !exists("g:pt_apply_qmappings")
+  let g:pt_apply_qmappings=1
 endif
 
-if !exists("g:ag_apply_lmappings")
-  let g:ag_apply_lmappings=1
+if !exists("g:pt_apply_lmappings")
+  let g:pt_apply_lmappings=1
 endif
 
-if !exists("g:ag_qhandler")
-  let g:ag_qhandler="botright copen"
+if !exists("g:pt_qhandler")
+  let g:pt_qhandler="botright copen"
 endif
 
-if !exists("g:ag_lhandler")
-  let g:ag_lhandler="botright lopen"
+if !exists("g:pt_lhandler")
+  let g:pt_lhandler="botright lopen"
 endif
 
-if !exists("g:ag_mapping_message")
-  let g:ag_mapping_message=1
+if !exists("g:pt_mapping_message")
+  let g:pt_mapping_message=1
 endif
 
-function! ag#AgBuffer(cmd, args)
+function! pt#PtBuffer(cmd, args)
   let l:bufs = filter(range(1, bufnr('$')), 'buflisted(v:val)')
   let l:files = []
   for buf in l:bufs
@@ -56,15 +50,15 @@ function! ag#AgBuffer(cmd, args)
       call add(l:files, l:file)
     endif
   endfor
-  call ag#Ag(a:cmd, a:args . ' ' . join(l:files, ' '))
+  call pt#Pt(a:cmd, a:args . ' ' . join(l:files, ' '))
 endfunction
 
-function! ag#Ag(cmd, args)
-  let l:ag_executable = get(split(g:ag_prg, " "), 0)
+function! pt#Pt(cmd, args)
+  let l:pt_executable = get(split(g:pt_prg, " "), 0)
 
-  " Ensure that `ag` is installed
-  if !executable(l:ag_executable)
-    echoe "Ag command '" . l:ag_executable . "' was not found. Is the silver searcher installed and on your $PATH?"
+  " Ensure that `pt` is installed
+  if !executable(l:pt_executable)
+    echoe "Pt command '" . l:pt_executable . "' was not found. Is the silver searcher installed and on your $PATH?"
     return
   endif
 
@@ -77,12 +71,12 @@ function! ag#Ag(cmd, args)
 
   " Format, used to manage column jump
   if a:cmd =~# '-g$'
-    let s:ag_format_backup=g:ag_format
-    let g:ag_format="%f"
-  elseif exists("s:ag_format_backup")
-    let g:ag_format=s:ag_format_backup
-  elseif !exists("g:ag_format")
-    let g:ag_format="%f:%l:%c:%m"
+    let s:pt_format_backup=g:pt_format
+    let g:pt_format="%f"
+  elseif exists("s:pt_format_backup")
+    let g:pt_format=s:pt_format_backup
+  elseif !exists("g:pt_format")
+    let g:pt_format="%f:%l:%m"
   endif
 
   let l:grepprg_bak=&grepprg
@@ -90,8 +84,8 @@ function! ag#Ag(cmd, args)
   let l:t_ti_bak=&t_ti
   let l:t_te_bak=&t_te
   try
-    let &grepprg=g:ag_prg
-    let &grepformat=g:ag_format
+    let &grepprg=g:pt_prg
+    let &grepformat=g:pt_format
     set t_ti=
     set t_te=
     silent! execute a:cmd . " " . escape(l:grepargs, '|')
@@ -109,17 +103,17 @@ function! ag#Ag(cmd, args)
   endif
 
   if a:cmd =~# '^l' && l:match_count
-    exe g:ag_lhandler
-    let l:apply_mappings = g:ag_apply_lmappings
+    exe g:pt_lhandler
+    let l:apply_mappings = g:pt_apply_lmappings
     let l:matches_window_prefix = 'l' " we're using the location list
   elseif l:match_count
-    exe g:ag_qhandler
-    let l:apply_mappings = g:ag_apply_qmappings
+    exe g:pt_qhandler
+    let l:apply_mappings = g:pt_apply_qmappings
     let l:matches_window_prefix = 'c' " we're using the quickfix window
   endif
 
   " If highlighting is on, highlight the search keyword.
-  if exists("g:ag_highlight")
+  if exists("g:pt_highlight")
     let @/=a:args
     set hlsearch
   end
@@ -148,8 +142,8 @@ function! ag#Ag(cmd, args)
       " <C-w>J                                              Slam the quickfix/location list window against the bottom edge
       " :exe printf(":normal %d\<lt>c-w>_", b:height)<CR>   Restore the quickfix/location list window's height from before we opened the match
 
-      if g:ag_mapping_message && l:apply_mappings
-        echom "ag.vim keys: q=quit <cr>/e/t/h/v=enter/edit/tab/split/vsplit go/T/H/gv=preview versions of same"
+      if g:pt_mapping_message && l:apply_mappings
+        echom "pt.vim keys: q=quit <cr>/e/t/h/v=enter/edit/tab/split/vsplit go/T/H/gv=preview versions of same"
       endif
     endif
   else
@@ -157,14 +151,14 @@ function! ag#Ag(cmd, args)
   endif
 endfunction
 
-function! ag#AgFromSearch(cmd, args)
+function! pt#PtFromSearch(cmd, args)
   let search =  getreg('/')
   " translate vim regular expression to perl regular expression.
   let search = substitute(search,'\(\\<\|\\>\)','\\b','g')
-  call ag#Ag(a:cmd, '"' .  search .'" '. a:args)
+  call pt#Pt(a:cmd, '"' .  search .'" '. a:args)
 endfunction
 
-function! ag#GetDocLocations()
+function! pt#GetDocLocations()
   let dp = ''
   for p in split(&runtimepath,',')
     let p = p.'/doc/'
@@ -175,7 +169,7 @@ function! ag#GetDocLocations()
   return dp
 endfunction
 
-function! ag#AgHelp(cmd,args)
-  let args = a:args.' '.ag#GetDocLocations()
-  call ag#Ag(a:cmd,args)
+function! pt#PtHelp(cmd,args)
+  let args = a:args.' '.pt#GetDocLocations()
+  call pt#Pt(a:cmd,args)
 endfunction

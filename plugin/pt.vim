@@ -1,0 +1,11 @@
+" NOTE: You must, of course, install pt / the_platinum_searcher
+command! -bang -nargs=* -complete=file Pt call pt#Pt('grep<bang>',<q-args>)
+command! -bang -nargs=* -complete=file PtBuffer call pt#PtBuffer('grep<bang>',<q-args>)
+command! -bang -nargs=* -complete=file PtAdd call pt#Pt('grepadd<bang>', <q-args>)
+command! -bang -nargs=* -complete=file PtFromSearch call pt#PtFromSearch('grep<bang>', <q-args>)
+command! -bang -nargs=* -complete=file LPt call pt#Pt('lgrep<bang>', <q-args>)
+command! -bang -nargs=* -complete=file LPtBuffer call pt#PtBuffer('lgrep<bang>',<q-args>)
+command! -bang -nargs=* -complete=file LPtAdd call pt#Pt('lgrepadd<bang>', <q-args>)
+command! -bang -nargs=* -complete=file PtFile call pt#Pt('grep<bang> -g', <q-args>)
+command! -bang -nargs=* -complete=help PtHelp call pt#PtHelp('grep<bang>',<q-args>)
+command! -bang -nargs=* -complete=help LPtHelp call pt#PtHelp('lgrep<bang>',<q-args>)

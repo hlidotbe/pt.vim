@@ -1,68 +1,68 @@
-*ag.txt*   Plugin that integrates ag with Vim
+pt.txt*   Plugin that integrates pt with Vim
 
 ==============================================================================
-INTRODUCTION                                                               *ag*
+INTRODUCTION                                                               *pt*
 
-This plugin is a front for the_silver_searcher: ag. Ag can be used as a
-replacement for ack. This plugin will allow you to run ag from vim, and shows
+This plugin is a front for the_platinum_searcher: pt. Pt can be used as a
+replacement for ack. This plugin will allow you to run pt from vim, and shows
 the results in a split window.
 
-:Ag[!] [options] {pattern} [{directory}]                                  *:Ag*
+:Pt[!] [options] {pattern} [{directory}]                                  *:Pt*
 
     Search recursively in {directory} (which defaults to the current
     directory) for the {pattern}. Behaves just like the |:grep| command, but
     will open the |Quickfix| window for you. If [!] is not given the first
     error is jumped to.
 
-:AgBuffer[!] [options] {pattern}                                    *:AgBuffer*
+:PtBuffer[!] [options] {pattern}                                    *:PtBuffer*
 
     Search for {pattern} in all open buffers. Behaves just like the |:grep|
     command, but will open the |Quickfix| window for you. If [!] is not given
     the first error is jumped to.
 
-    Note: this will not find changes in modified buffers, since ag can only
+    Note: this will not find changes in modified buffers, since pt can only
     find what is on disk! You can save buffers automatically when searching
     with the 'autowrite' option. A buffer will be ignored if it is a directory
     (an explorer, like netrw).
 
-:AgAdd [options] {pattern} [{directory}]                               *:AgAdd*
+:PtAdd [options] {pattern} [{directory}]                               *:PtAdd*
 
-    Just like |:Ag|, but instead of making a new list, the matches are
+    Just like |:Pt|, but instead of making a new list, the matches are
     appended to the current |quickfix| list.
 
-:AgFromSearch [{directory}]                                     *:AgFromSearch*
+:PtFromSearch [{directory}]                                     *:PtFromSearch*
 
-    Just like |:Ag| but the pattern is from previous search.
+    Just like |:Pt| but the pattern is from previous search.
 
-:LAg [options] {pattern} [{directory}]                                   *:LAg*
+:LPt [options] {pattern} [{directory}]                                   *:LPt*
 
-    Just like |:Ag| but instead of the |quickfix| list, matches are placed in
+    Just like |:Pt| but instead of the |quickfix| list, matches are placed in
     the current |location-list|.
 
-:LAgBuffer [options] {pattern}                                     *:LAgBuffer*
+:LPtBuffer [options] {pattern}                                     *:LPtBuffer*
 
-    Just like |:AgBuffer| but instead of the |quickfix| list, matches are
+    Just like |:PtBuffer| but instead of the |quickfix| list, matches are
     placed in the current |location-list|.
 
-:LAgAdd [options] {pattern} [{directory}]                             *:LAgAdd*
+:LPtAdd [options] {pattern} [{directory}]                             *:LPtAdd*
 
-    Just like |:AgAdd| but instead of the |quickfix| list, matches are added
+    Just like |:PtAdd| but instead of the |quickfix| list, matches are added
     to the current |location-list|
 
-:AgFile [options] {pattern} [{directory}]                             *:AgFile*
+:PtFile [options] {pattern} [{directory}]                             *:PtFile*
 
     Search recursively in {directory} (which defaults to the current
     directory) for filenames matching the {pattern}. Behaves just like the
     |:grep| command, but will open the |Quickfix| window for you.
 
-:AgHelp[!] [options] {pattern}                                        *:AgHelp*
+:PtHelp[!] [options] {pattern}                                        *:PtHelp*
 
     Search vim documentation files for the {pattern}. Behaves just like the
-    |:Ag| command, but searches only vim documentation .txt files
+    |:Pt| command, but searches only vim documentation .txt files
 
-:LAgHelp [options] {pattern}                                         *:LAgHelp*
+:LPtHelp [options] {pattern}                                         *:LPtHelp*
 
-    Just like |:AgHelp| but instead of the |quickfix| list, matches are placed
+    Just like |:PtHelp| but instead of the |quickfix| list, matches are placed
     in the current |location-list|.
 
 Files containing the search term will be listed in the split window, along
@@ -74,73 +74,73 @@ See http://geoff.greer.fm/2011/12/27/the-silver-searcher-better-than-ack/ for
 more information.
 
 ==============================================================================
-OPTIONS                                                            *ag-options*
+OPTIONS                                                            *pt-options*
 
-                                                                     *g:ag_prg*
-The location of the Ag program, and any options you want passed to it before
-searching. Default: "ag --vimgrep" (for parsable output). Example: >
-  let g:ag_prg="ag --vimgrep --smart-case"
+                                                                     *g:pt_prg*
+The location of the Pt program, and any options you want passed to it before
+searching. Default: "pt --vimgrep" (for parsable output). Example: >
+  let g:pt_prg="pt --vimgrep --smart-case"
 <
-Note: the `--vimgrep` option was added in Ag 0.25.0. If ag.vim detects that
+Note: the `--vimgrep` option was added in Pt 0.25.0. If pt.vim detects that
 you're using a lower version, the following default will be used instead: >
-  let g:ag_prg="ag --column --nogroup --noheading"
+  let g:pt_prg="pt --column --nogroup --noheading"
 <
-This works around inconsistent behaviors in earlier Ag versions, but it is
+This works around inconsistent behaviors in earlier Pt versions, but it is
 recommended that you upgrade if possible for a better experience. `--vimgrep`
 supports multiple matches on the same line of text, for example.
 
-For background, see: https://github.com/rking/ag.vim/pull/88
+For background, see: https://github.com/rking/pt.vim/pull/88
 
-                                                               *g:ag_highlight*
+                                                               *g:pt_highlight*
 If 1, highlight the search terms after searching. Default: 0. Example: >
-  let g:ag_highlight=1
+  let g:pt_highlight=1
 <
 
-                                                                  *g:ag_format*
+                                                                  *g:pt_format*
 Format to recognize the matches. See 'errorformat' for more info. Default:
 "%f" when searching for files, "%f:%l:%c:%m" if not otherwise set. For
-example, if your `g:ag_prg` is set to just "ag" (no column numbers in the
+example, if your `g:pt_prg` is set to just "pt" (no column numbers in the
 output, so when you jump to a match your cursor will be on the start of the
 line): >
-  let g:ag_format="%f:%l:%m"
+  let g:pt_format="%f:%l:%m"
 <
 
-                                                         *g:ag_apply_lmappings*
+                                                         *g:pt_apply_lmappings*
 Whether or not to add custom mappings to location list windows opened by this
 plugin. Only applies if you're using the location list. Default 1. Example: >
-  let g:ag_apply_lmappings=0
+  let g:pt_apply_lmappings=0
 <
 
-                                                         *g:ag_apply_qmappings*
+                                                         *g:pt_apply_qmappings*
 Whether or not to add custom mappings to quickfix windows opened by this
 plugin. Only applies if you're using the error list. Default 1. Example: >
-  let g:ag_apply_qmappings=0
+  let g:pt_apply_qmappings=0
 <
 
-                                                                *g:ag_lhandler*
+                                                                *g:pt_lhandler*
 A custom command used to open the location list after it's populated.
 Default: "botright lopen". You might want to set this to change where the
 location list is opened, or what size it is. Example: >
-  let g:ag_lhandler="topleft lopen"
+  let g:pt_lhandler="topleft lopen"
 <
 
-                                                                *g:ag_qhandler*
+                                                                *g:pt_qhandler*
 A custom command used to open the error list after it's populated. Default:
 "botright copen". You might want to set this to change where the quickfix
 window is opened, or what size it is. Example: >
-  let g:ag_qhandler="copen 20"
+  let g:pt_qhandler="copen 20"
 <
 
-                                                         *g:ag_mapping_message*
+                                                         *g:pt_mapping_message*
 Whether or not to show the message explaining the extra mappings that are
 added to the results list this plugin populates. This message is not shown if
-the mappings are not applied (see |g:ag_apply_qmappings| and
-|g:ag_apply_lmappings| for more info. Default 1. Example: >
-  let g:ag_mapping_message=0
+the mappings are not applied (see |g:pt_apply_qmappings| and
+|g:pt_apply_lmappings| for more info. Default 1. Example: >
+  let g:pt_mapping_message=0
 <
 
 ==============================================================================
-MAPPINGS                                                         *ag-mappings*
+MAPPINGS                                                         *pt-mappings*
 
 The following keyboard shortcuts are available in the quickfix window:
 
@@ -148,7 +148,7 @@ e                   open file and close the quickfix window.
 
 o                   open file (same as enter).
 
-go                  preview file (open but maintain focus on ag.vim results).
+go                  preview file (open but maintain focus on pt.vim results).
 
 t                   open in a new tab.
 
