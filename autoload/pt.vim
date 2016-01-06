@@ -1,24 +1,34 @@
 " NOTE: You must, of course, install pt / the_platinum_searcher
 
-" FIXME: Delete deprecated options below on or after 15-7 (6 months from when they were changed) {{{
+" FIXME: Delete deprecated options below on or after 2016-4 (6 months from when the deprecation warning was added) {{{
+
 
 if exists("g:ptprg")
   let g:pt_prg = g:ptprg
+  echohl WarningMsg
+  call input('g:ptprg is deprecated and will be removed. Please use g:pt_prg')
+  echohl None
 endif
 
 if exists("g:pthighlight")
   let g:pt_highlight = g:pthighlight
+  echohl WarningMsg
+  call input('g:pthighlight is deprecated and will be removed. Please use g:pt_highlight')
+  echohl None
 endif
 
 if exists("g:ptformat")
   let g:pt_format = g:ptformat
+  echohl WarningMsg
+  call input('g:ptformat is deprecated and will be removed. Please use g:pt_format')
+  echohl None
 endif
 
 " }}} FIXME: Delete the deprecated options above on or after 15-7 (6 months from when they were changed)
 
 " Location of the pt utility
 if !exists("g:pt_prg")
-  let g:pt_prg="pt --nogroup"
+  let g:pt_prg="pt --nogroup --column"
 endif
 
 if !exists("g:pt_apply_qmappings")
@@ -39,6 +49,10 @@ endif
 
 if !exists("g:pt_mapping_message")
   let g:pt_mapping_message=1
+endif
+
+if !exists("g:pt_working_path_mode")
+    let g:pt_working_path_mode = 'c'
 endif
 
 function! pt#PtBuffer(cmd, args)
@@ -69,6 +83,11 @@ function! pt#Pt(cmd, args)
     let l:grepargs = a:args . join(a:000, ' ')
   end
 
+  if empty(l:grepargs)
+    echo "Usage: ':Ag {pattern}' (or just :Ag to search for the word under the cursor). See ':help :Ag' for more information."
+    return
+  endif
+
   " Format, used to manage column jump
   if a:cmd =~# '-g$'
     let s:pt_format_backup=g:pt_format
@@ -88,7 +107,20 @@ function! pt#Pt(cmd, args)
     let &grepformat=g:pt_format
     set t_ti=
     set t_te=
-    silent! execute a:cmd . " " . escape(l:grepargs, '|')
+    if g:pt_working_path_mode ==? 'r' " Try to find the projectroot for current buffer
+      let l:cwd_back = getcwd()
+      let l:cwd = s:guessProjectRoot()
+      try
+        exe "lcd ".l:cwd
+      catch
+        echom 'Failed to change directory to:'.l:cwd
+      finally
+        silent! execute a:cmd . " " . escape(l:grepargs, '|')
+        exe "lcd ".l:cwd_back
+      endtry
+    else " Someone chose an undefined value or 'c' so we revert to the default
+      silent! execute a:cmd . " " . escape(l:grepargs, '|')
+    endif
   finally
     let &grepprg=l:grepprg_bak
     let &grepformat=l:grepformat_bak
@@ -115,7 +147,8 @@ function! pt#Pt(cmd, args)
   " If highlighting is on, highlight the search keyword.
   if exists("g:pt_highlight")
     let @/=a:args
-    set hlsearch
+    "let @/ = matchstr(a:args, "\\v(-)\@<!(\<)\@<=\\w+|['\"]\\zs.{-}\\ze['\"]")
+    call feedkeys(":let &hlsearch=1 \| echo \<CR>", 'n')
   end
 
   redraw!
@@ -146,8 +179,12 @@ function! pt#Pt(cmd, args)
         echom "pt.vim keys: q=quit <cr>/e/t/h/v=enter/edit/tab/split/vsplit go/T/H/gv=preview versions of same"
       endif
     endif
-  else
+  else " Close the split window automatically:
+    cclose
+    lclose
+    echohl WarningMsg
     echom 'No matches for "'.a:args.'"'
+    echohl None
   endif
 endfunction
 
@@ -161,7 +198,7 @@ endfunction
 function! pt#GetDocLocations()
   let dp = ''
   for p in split(&runtimepath,',')
-    let p = p.'/doc/'
+    let p = p.'doc/'
     if isdirectory(p)
       let dp = p.'*.txt '.dp
     endif
@@ -172,4 +209,22 @@ endfunction
 function! pt#PtHelp(cmd,args)
   let args = a:args.' '.pt#GetDocLocations()
   call pt#Pt(a:cmd,args)
+endfunction
+
+function! s:guessProjectRoot()
+  let l:splitsearchdir = split(getcwd(), "/")
+
+  while len(l:splitsearchdir) > 2
+    let l:searchdir = '/'.join(l:splitsearchdir, '/').'/'
+    for l:marker in ['.rootdir', '.git', '.hg', '.svn', 'bzr', '_darcs', 'build.xml']
+      " found it! Return the dir
+      if filereadable(l:searchdir.l:marker) || isdirectory(l:searchdir.l:marker)
+        return l:searchdir
+      endif
+    endfor
+    let l:splitsearchdir = l:splitsearchdir[0:-2] " Splice the list to get rid of the tail directory
+  endwhile
+
+  " Nothing found, fallback to current working dir
+  return getcwd()
 endfunction

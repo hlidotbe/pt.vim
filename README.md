@@ -11,23 +11,19 @@ you to run pt from vim, and shows the results in a split window.
 
 You have to first install [pt](https://github.com/monochromegane/the_platinum_searcher), itself. On Mac+Homebrew, Gentoo Linux, several others, there's package named `the_platinum_searcher`, but if your OS/distro don't have one, the GitHub repo installs fine:
 
-```sh
-git clone https://github.com/monochromegane/the_platinum_searcher pt && cd pt && ./build.sh && sudo make install
-```
+Vim has various ways of installing plugins, the standard way is in [the documentation](http://vimdoc.sourceforge.net/htmldoc/usr_05.html#plugin), but most people use a plugin to manage their plugins. If you don't already have a preferred plugin manager plugin, why not try one of the following?
+- [vim-plug](https://github.com/junegunn/vim-plug#readme)
+- [vim-pathogen](https://github.com/tpope/vim-pathogen#readme)
+- [Vundle.vim](https://github.com/gmarik/Vundle.vim#readme)
+- Or, if you don't use any sort of Vim plugin management:
 
-* Then, if you're using [pathogen](https://github.com/tpope/vim-pathogen):
+  ```sh
+  cd ~/.vim/bundle && git clone https://github.com/hlidotbe/pt.vim ag && echo "set runtimepath^=~/.vim/bundle/pt" >> ~/.vimrc
+  ```
 
-```sh
-cd ~/.vim/bundle && git clone https://github.com/nazo/pt.vim pt && vim +Helptags
-```
+  Then open vim and run `:helptags ~/.vim/bundle/pt/doc`.
 
-* Or, if you're using [Vundle](https://github.com/gmarik/vundle):
-
-```sh
-echo "Plugin 'nazo/pt.vim'" >> ~/.vimrc && vim +BundleInstall
-```
-
-### Configuration
+### Configuration ###
 
 You can specify a custom pt name and path in your .vimrc like so:
 
@@ -43,7 +39,7 @@ Files containing the search term will be listed in the split window, along with
 the line number of the occurrence, once for each occurrence.  [Enter] on a line
 in this window will open the file, and place the cursor on the matching line.
 
-Just like where you use :grep, :grepadd, :lgrep, and :lgrepadd, you can use `:Pt`, `:PtAdd`, `:LPt`, and `:LPtAdd` respectively. (See `doc/ag.txt`, or install and `:h Pt` for more information.)
+Just like where you use :grep, :grepadd, :lgrep, and :lgrepadd, you can use `:Pt`, `:PtAdd`, `:LPt`, and `:LPtAdd` respectively. (See `doc/pt.txt`, or install and `:h Pt` for more information.)
 
 ### Gotchas ###
 
@@ -66,7 +62,7 @@ In the quickfix window, you can use:
     gv   to open in vertical split silently
     q    to close the quickfix window
 
-### Acknowledgements
+### Acknowledgements ###
 
 This Vim plugin is derived (and by derived, I mean copied, almost entirely)
 from [milesz's ack.vim](https://github.com/mileszs/ack.vim), which I also
